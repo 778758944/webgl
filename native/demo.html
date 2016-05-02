@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>Examples</title>
+<meta name="description" content="">
+<meta name="keywords" content="">
+<link href="" rel="stylesheet">
+</head>
+<body>
+	<canvas id="canvas" width='500' height='500'></canvas>
+    <script type="x-webgl/x-vertex-shader" id='vertexShader'>
+        attribute vec4 apos;
+
+        void main() {
+            gl_Position=apos;
+        }
+    </script>
+    <script type="x-webgl/x-fragment-shader" id="fragmentShader">
+        void main() {
+            gl_FragColor=vec4(1.0,1.0,0.0,1.0);
+        }
+    </script>
+    <script>
+    	var cvs=document.getElementById('canvas');
+    	var gl=cvs.getContext('experimental-webgl');
+    	//清理缓冲区
+    	gl.clearColor(0,0,0,1);
+    	gl.clear(gl.COLOR_BUFFER_BIT);
+
+
+
+    	//定义视口
+    	gl.viewport(0,0,cvs.width,cvs.height);
+
+        //创建缓冲区
+        var vertices=new Float32Array([0,1,1,-1,-1,-1]);
+        var buffer=gl.createBuffer();
+        var vertexSetSize=2;
+        var vertexSetCount=vertices.length/vertexSetSize;
+
+
+        gl.bindBuffer(gl.ARRAY_BUFFER,buffer);
+        gl.bufferData(gl.ARRAY_BUFFER,vertices,gl.STATIC_DRAW);
+
+
+
+
+        // 获取glsl程序
+        var vertexGLsl=document.getElementById('vertexShader').text;
+        var fragmentGLsl=document.getElementById('fragmentShader').text;
+
+        //创建着色器
+        var vertexShader=gl.createShader(gl.VERTEX_SHADER);
+        gl.shaderSource(vertexShader,vertexGLsl);
+        gl.compileShader(vertexShader);
+
+        var fragmentShader=gl.createShader(gl.FRAGMENT_SHADER);
+        gl.shaderSource(fragmentShader,fragmentGLsl);
+        gl.compileShader(fragmentShader);
+
+        if(!gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS)){
+            console.log(gl.getShaderInfoLog(fragmentShader));
+        }
+
+        //将着色器连接到着色程序
+        var program=gl.createProgram();
+        gl.attachShader(program,vertexShader);
+        gl.attachShader(program,fragmentShader);
+        gl.linkProgram(program);
+
+        if(!gl.getProgramParameter(program,gl.LINK_STATUS)){
+            console.log(gl.getProgramInfoLog(program));
+        }
+
+
+        // gl.drawArrays(gl.POINTS,0,1);
+
+
+        //通知webgl使用这个程序
+        gl.useProgram(program);
+
+        //对uniform attribute进行赋值
+        // var uColor=gl.getUniformLocation(program,'uColor');
+        // gl.uniform4fv(uColor,[0,0,0,1]);
+
+        var apos=gl.getAttribLocation(program,'apos');
+        gl.enableVertexAttribArray(apos);
+        gl.vertexAttribPointer(apos,vertexSetSize,gl.FLOAT,false,0,0);
+        // var aposLocation=gl.getAttribLocation(program, 'apos');
+        var x=0.0;
+        var y=0.0;
+        document.addEventListener('keydown',function(e){
+            switch(e.keyCode){
+                case 37:
+                if(x<=-0.9) return;
+                x-=0.1;
+                break;
+
+                case 38:
+                if(y>=0.9) return;
+                y+=0.1;
+                break;
+
+                case 39:
+                if(x>=0.9) return;
+                x+=0.1;
+                break;
+
+                case 40:
+                if(y<=-0.9) return;
+                y-=0.1;
+                break;  
+            }
+            // gl.clearColor(0.0,0.0,1.0,1.0);
+            // gl.vertexAttrib2f(aposLocation,x,y);
+            // gl.clear(gl.COLOR_BUFFER_BIT);
+            // gl.drawArrays(gl.POINTS,0,1);
+        })
+        gl.drawArrays(gl.TRIANGLES,0,vertexSetCount);
+
+
+
+
+
+
+
+
+
+        //删除缓冲区
+        // gl.deleteBuffer(buffer);
+
+        console.log(gl.getError());
+
+
+
+
+
+
+
+
+    	
+    	// var program=gl.createProgramFromScripts(gl,['2d-vertex-shader','2d-fragment-shader']);
+    	// gl.useProgram()
+
+    	//类型化数组
+    	// var buffer=new ArrayBuffer(20);
+    	// console.log(buffer.byteLength);
+
+
+    	// //视图,用于存放类型数组,一参表示偏移，二餐表示长度
+    	// // var view=new DataView(buffer);
+    	// // view.setUint16(0,25);
+    	// // value=view.getInt16(1);
+    	// // console.log(value);
+
+
+    	// //类型化视图
+    	// var int8s=new Int8Array(buffer,0,10);
+    	// // var unit16s=new Uint16Array(buffer,10,10);
+    	// //类型化数组中一个元素占多少子节
+    	// console.log(Int8Array.BYTES_PER_ELEMENT);
+
+    	// var uint16=new Uint16Array(10);
+    	// console.log(uint16.byteLength);
+    	// console.log(uint16.length);
+
+
+    	// var int8s2=new Int8Array([1,2,3,4,5]);
+    	// console.log(int8s2.length);
+    	// console.log(int8s2[1]);
+
+    	// var uint16s2=new Int8Array([1,2,3,4,5]);
+    	// console.log(uint16s2.length);
+    	// console.log(uint16s2[2]);
+
+
+
+
+
+
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
